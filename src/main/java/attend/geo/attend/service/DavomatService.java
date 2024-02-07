@@ -1,7 +1,7 @@
 package attend.geo.attend.service;
 
 import attend.geo.attend.dto.AllUserDavomatDto;
-import attend.geo.attend.dto.GetAllUsersPageRequest;
+import attend.geo.attend.dto.PageRequests;
 import attend.geo.attend.dto.PageResponse;
 import attend.geo.attend.entity.UserAttendance;
 import attend.geo.attend.repository.UserAttendanceRepository;
@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 @Service
 public class DavomatService {
     private final UserAttendanceRepository userAttendanceRepository;
-    public HttpEntity<?> getAllUsersDavomat(Date start, Date endDate, GetAllUsersPageRequest pageable) {
+    public HttpEntity<?> getAllUsersDavomat(Date start, Date endDate, PageRequests pageable) {
         if (start != null && endDate != null) {
             Page<UserAttendance> byDateBetweenOrderByDateAsc = userAttendanceRepository.findAllByDateBetweenOrderByDateAsc(start, endDate,PageRequest.of(pageable.getPageNumber(), pageable.getPageSize()));
 

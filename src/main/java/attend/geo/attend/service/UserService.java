@@ -1,6 +1,6 @@
 package attend.geo.attend.service;
 
-import attend.geo.attend.dto.GetAllUserRequest;
+import attend.geo.attend.dto.PageRequests;
 import attend.geo.attend.dto.UserDto;
 import attend.geo.attend.dto.UserRequest;
 import attend.geo.attend.entity.Images;
@@ -144,7 +144,7 @@ public class UserService {
 
     }
 
-    public HttpEntity<?> getAllUserRequest(GetAllUserRequest request) {
+    public HttpEntity<?> getAllUserRequest(PageRequests request) {
         try {
             if (request != null) {
                 Page<User> all = userRepository.findAll(PageRequest.of(request.getPageNumber(), request.getPageSize()));
@@ -206,11 +206,24 @@ public class UserService {
                     } else {
                         return Payload.conflict("User did not delete").response();
                     }
-                }else {
+                } else {
                     return Payload.conflict("There is no such user ID").response();
                 }
-            }else {
+            } else {
                 return Payload.conflict("User id error !").response();
+            }
+        } catch (Exception e) {
+            return Payload.conflict(e.getMessage()).response();
+        }
+    }
+
+    public HttpEntity<?> getUserId(Long id) {
+        try {
+            Optional<User> byId = userRepository.findById(id);
+            if (!byId.isEmpty()) {
+                return Payload.ok(byId.get()).response();
+            }else {
+                return Payload.conflict("User not found").response();
             }
         } catch (Exception e) {
             return Payload.conflict(e.getMessage()).response();

@@ -1,6 +1,7 @@
 package attend.geo.attend.controller;
 
 import attend.geo.attend.dto.GetAllUsersPageRequest;
+import attend.geo.attend.dto.PageRequests;
 import attend.geo.attend.service.DavomatService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -23,7 +24,7 @@ public class DavomatController {
     public HttpEntity<?> getAllUsersDavomat(
             @RequestParam(value = "start", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date start,
             @RequestParam(value = "end", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date end,
-            @RequestParam(value = "page", required = false) GetAllUsersPageRequest pageable) {
+            @RequestParam(value = "page", required = false) PageRequests pageable) {
         return davomatService.getAllUsersDavomat(start, end,pageable);
     }
 }

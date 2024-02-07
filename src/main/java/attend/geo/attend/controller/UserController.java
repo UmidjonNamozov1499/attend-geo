@@ -1,6 +1,6 @@
 package attend.geo.attend.controller;
 
-import attend.geo.attend.dto.GetAllUserRequest;
+import attend.geo.attend.dto.PageRequests;
 import attend.geo.attend.dto.UserDto;
 import attend.geo.attend.dto.UserRequest;
 import attend.geo.attend.service.UserService;
@@ -32,15 +32,19 @@ public class UserController {
     }
 
     @GetMapping(value = "/getUsers")
-    public HttpEntity<?> getAllUsers(@RequestBody GetAllUserRequest request){
+    public HttpEntity<?> getAllUsers(@RequestBody PageRequests request){
         return userService.getAllUserRequest(request);
+    }
+    @GetMapping(value = "/getUsers/{id}")
+    HttpEntity<?> getUserId(@PathVariable Long id){
+        return userService.getUserId(id);
     }
     @PutMapping(value = "/updateUser/{id}")
     public HttpEntity<?> updateUser(@RequestBody UserDto userDto,@PathVariable Long id){
         return userService.updateUser(userDto,id);
     }
     @DeleteMapping(value = "/deleteUser/{id}")
-    public HttpEntity<?> deleteUser(@RequestParam Long id){
+    public HttpEntity<?> deleteUser(@PathVariable Long id){
         return userService.deleteUser(id);
     }
 }
