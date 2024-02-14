@@ -33,115 +33,86 @@ public class UserService {
 
 
     public HttpEntity<?> addUser(UserDto userDto) {
-        try {
-            if (userDto != null) {
-                Random random = new Random();
-                long min = 100_000L;
-                long max = 999_999L;
-                long randomSixDigitNumber = random.nextLong() % (max - min + 1) + min;
-
-                if (randomSixDigitNumber < 0) {
-                    randomSixDigitNumber = -randomSixDigitNumber;
-                }
-
-                User user = new User();
-                user.setUserName(userDto.getUserName());
-                user.setIsBlocked(userDto.getIsBlocked());
-                user.setPosition(userDto.getPosition());
-                user.setRandomCode(randomSixDigitNumber);
-                if (userDto.getTokens() != null && !userDto.getTokens().isEmpty()) {
-                    List<Images> images = new ArrayList<>();
-                    for (String token : userDto.getTokens()) {
-                        Optional<Images> imagesOptional = imageRepository.findByToken(UUID.fromString(token));
-                        imagesOptional.ifPresent(images::add);
-                    }
-                    user.setImages(images);
-                }
-                user = userRepository.save(user);
-                return Payload.ok(user).response();
-            } else {
-                return Payload.notFound().response();
-            }
-        } catch (Exception e) {
-            return Payload.notFound("Server bilan muammo").response();
-        }
+//        try {
+//            if (userDto != null) {
+//                Random random = new Random();
+//                long min = 100_000L;
+//                long max = 999_999L;
+//                long randomSixDigitNumber = random.nextLong() % (max - min + 1) + min;
+//
+//                if (randomSixDigitNumber < 0) {
+//                    randomSixDigitNumber = -randomSixDigitNumber;
+//                }
+//                String firstName = userDto.getFirstName();
+//                String lastName = userDto.getLastName();
+//                User user = new User();
+//                user.setFirstName(userDto.getFirstName());
+//                user.setLastName(userDto.getLastName());
+//                user.setUserName(firstName+lastName);
+//                user.setIsBlocked(userDto.getIsBlocked());
+//                user.setPosition(userDto.getPosition());
+//                user.setRandomCode(randomSixDigitNumber);
+//                if (userDto.getTokens() != null && !userDto.getTokens().isEmpty()) {
+//                    List<Images> images = new ArrayList<>();
+//                    for (String token : userDto.getTokens()) {
+//                        Optional<Images> imagesOptional = imageRepository.findByToken(UUID.fromString(token));
+//                        imagesOptional.ifPresent(images::add);
+//                    }
+//                    user.setImages(images);
+//                }
+//                user = userRepository.save(user);
+//                return Payload.ok(user).response();
+//            } else {
+//                return Payload.notFound().response();
+//            }
+//        } catch (Exception e) {
+//            return Payload.notFound("Server bilan muammo").response();
+//        }
+        return null;
     }
 
 
-    public HttpEntity<?> addUserAndFile(MultipartFile file, List<MultipartFile> files, UserRequest request) {
+    public HttpEntity<?> addUserAndFile(UserRequest request) {
         try {
             User user = new User();
-            if (file == null && files != null && request != null) {
-                List<Images> images = new ArrayList<>();
-                for (MultipartFile multipartFile : files) {
-                    Images images1 = new Images();
-                    images1.setFileName(multipartFile.getName());
-                    images1.setContentType(multipartFile.getContentType());
-                    images1.setFileSize(multipartFile.getSize());
-                    String originalName = multipartFile.getOriginalFilename();
-                    String[] split = originalName.split("\\.");
-                    String actualName = UUID.randomUUID() + "." + split[split.length - 1];
-                    images1.setActualName(actualName);
-                    imageRepository.save(images1);
-                    images.add(images1);
-                }
-
-                user.setUserName(request.getUserName());
-                user.setImages(images);
-
-                Random random = new Random();
-                long min = 100_000L;
-                long max = 999_999L;
-                long randomSixDigitNumber = random.nextLong() % (max - min + 1) + min;
-
-                if (randomSixDigitNumber < 0) {
-                    randomSixDigitNumber = -randomSixDigitNumber;
-                }
-                user.setRandomCode(randomSixDigitNumber);
-                user.setPosition(request.getPosition());
-                user.setIsBlocked(request.getIsBlocked());
-                user.setConnection(false);
-                User saveUser = userRepository.save(user);
-                return Payload.ok(saveUser).response();
-            } else if (!file.isEmpty() && files == null && request != null) {
-                List<Images> images = new ArrayList<>();
-                Images image = new Images();
-                image.setFileName(file.getName());
-                image.setFileSize(file.getSize());
-                image.setContentType(file.getContentType());
-                String originalName = file.getOriginalFilename();
+            List<MultipartFile> files = request.getFiles();
+            List<Images> images = new ArrayList<>();
+            for (MultipartFile multipartFile : files) {
+                Images images1 = new Images();
+                images1.setFileName(multipartFile.getName());
+                images1.setContentType(multipartFile.getContentType());
+                images1.setFileSize(multipartFile.getSize());
+                String originalName = multipartFile.getOriginalFilename();
                 String[] split = originalName.split("\\.");
                 String actualName = UUID.randomUUID() + "." + split[split.length - 1];
-                image.setActualName(actualName);
-                images.add(image);
-                imageRepository.save(image);
-                file.transferTo(new File(upload + actualName));
-
-                user.setPosition(request.getPosition());
-                user.setIsBlocked(request.getIsBlocked());
-                user.setUserName(request.getUserName());
-                user.setImages(images);
-
-                Random random = new Random();
-                long min = 100_000L;
-                long max = 999_999L;
-                long randomSixDigitNumber = random.nextLong() % (max - min + 1) + min;
-
-                if (randomSixDigitNumber < 0) {
-                    randomSixDigitNumber = -randomSixDigitNumber;
-                }
-                user.setRandomCode(randomSixDigitNumber);
-                user.setIsBlocked(true);
-                user.setConnection(false);
-                User saveUser = userRepository.save(user);
-                return Payload.ok(saveUser).response();
-            } else {
-                return ResponseEntity.badRequest().body("Request error");
+                images1.setActualName(actualName);
+                imageRepository.save(images1);
+                images.add(images1);
             }
-        } catch (IOException e) {
-            return ResponseEntity.ok(e.getMessage());
-        }
+            String firstName = request.getFirstName();
+            String lastName = request.getLastName();
+            user.setFirstName(request.getFirstName());
+            user.setLastName(request.getLastName());
+            user.setUserName(firstName + lastName);
+            user.setImages(images);
 
+            Random random = new Random();
+            long min = 100_000L;
+            long max = 999_999L;
+            long randomSixDigitNumber = random.nextLong() % (max - min + 1) + min;
+
+            if (randomSixDigitNumber < 0) {
+                randomSixDigitNumber = -randomSixDigitNumber;
+            }
+            user.setRandomCode(randomSixDigitNumber);
+            user.setPosition(request.getPosition());
+            user.setConnection(false);
+            User saveUser = userRepository.save(user);
+            return Payload.ok(saveUser).response();
+        }catch (Exception e){
+            e.printStackTrace();
+            return Payload.conflict(e.getMessage()).response();
+        }
     }
 
     public HttpEntity<?> getAllUserRequest(PageRequests request) {
@@ -150,6 +121,8 @@ public class UserService {
                 Page<User> all = userRepository.findAll(PageRequest.of(request.getPageNumber(), request.getPageSize()));
                 List<User> userList = all.stream().map(r ->
                         new User(r.getId(),
+                                r.getFirstName(),
+                                r.getLastName(),
                                 r.getUserName(),
                                 r.getRandomCode(),
                                 r.getPosition(),
@@ -167,29 +140,51 @@ public class UserService {
         }
     }
 
-    public HttpEntity<?> updateUser(UserDto userDto, Long id) {
+    public HttpEntity<?> updateUser(UserRequest request, Long id) {
         try {
-            if (id != null & userDto != null) {
-                Optional<User> byId = userRepository.findById(id);
-                User user = byId.get();
-                user.setId(id);
-                user.setUserName(userDto.getUserName());
-                user.setPosition(userDto.getPosition());
-                user.setIsBlocked(userDto.getIsBlocked());
-                if (userDto.getTokens() != null && !userDto.getTokens().isEmpty()) {
-                    List<Images> images = new ArrayList<>();
-                    for (String token : userDto.getTokens()) {
-                        Optional<Images> imagesOptional = imageRepository.findByToken(UUID.fromString(token));
-                        imagesOptional.ifPresent(images::add);
-                    }
-                    user.setImages(images);
+            Optional<User> byId = userRepository.findById(id);
+            if (!byId.isEmpty()) {
+                User user = new User();
+                List<MultipartFile> files = request.getFiles();
+                List<Images> images = new ArrayList<>();
+                for (MultipartFile multipartFile : files) {
+                    Images images1 = new Images();
+                    images1.setFileName(multipartFile.getName());
+                    images1.setContentType(multipartFile.getContentType());
+                    images1.setFileSize(multipartFile.getSize());
+                    String originalName = multipartFile.getOriginalFilename();
+                    String[] split = originalName.split("\\.");
+                    String actualName = UUID.randomUUID() + "." + split[split.length - 1];
+                    images1.setActualName(actualName);
+                    imageRepository.save(images1);
+                    images.add(images1);
                 }
-                User updateUser = userRepository.save(user);
-                return Payload.ok(updateUser).response();
-            } else {
-                return Payload.notFound("Request error").response();
+                String firstName = request.getFirstName();
+                String lastName = request.getLastName();
+                user.setId(id);
+                user.setFirstName(request.getFirstName());
+                user.setLastName(request.getLastName());
+                user.setUserName(firstName + lastName);
+                user.setImages(images);
+
+                Random random = new Random();
+                long min = 100_000L;
+                long max = 999_999L;
+                long randomSixDigitNumber = random.nextLong() % (max - min + 1) + min;
+
+                if (randomSixDigitNumber < 0) {
+                    randomSixDigitNumber = -randomSixDigitNumber;
+                }
+                user.setRandomCode(randomSixDigitNumber);
+                user.setPosition(request.getPosition());
+                user.setConnection(false);
+                User saveUser = userRepository.save(user);
+                return Payload.ok(saveUser).response();
+            }else {
+                return Payload.conflict("User not found").response();
             }
-        } catch (Exception e) {
+        }catch (Exception e){
+            e.printStackTrace();
             return Payload.conflict(e.getMessage()).response();
         }
     }
@@ -222,7 +217,7 @@ public class UserService {
             Optional<User> byId = userRepository.findById(id);
             if (!byId.isEmpty()) {
                 return Payload.ok(byId.get()).response();
-            }else {
+            } else {
                 return Payload.conflict("User not found").response();
             }
         } catch (Exception e) {

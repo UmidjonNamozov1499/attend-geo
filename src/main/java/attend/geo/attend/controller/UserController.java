@@ -1,5 +1,6 @@
 package attend.geo.attend.controller;
 
+import attend.geo.attend.dto.GetAllUserRequest;
 import attend.geo.attend.dto.PageRequests;
 import attend.geo.attend.dto.UserDto;
 import attend.geo.attend.dto.UserRequest;
@@ -26,22 +27,22 @@ public class UserController {
         return userService.addUser(request);
     }
 
-    @PostMapping(value = "/addUserAndFile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public HttpEntity<?> addUserAndFile(@RequestPart(name = "file",required = false) MultipartFile file, @RequestPart(name = "files",required = false) List<MultipartFile> files, @RequestPart(name = "request") UserRequest request){
-        return userService.addUserAndFile(file,files,request);
+    @PostMapping(value = "/addUserAndFile")
+    public HttpEntity<?> addUserAndFile(@ModelAttribute UserRequest request){
+        return userService.addUserAndFile(request);
     }
-
     @GetMapping(value = "/getUsers")
-    public HttpEntity<?> getAllUsers(@RequestBody PageRequests request){
+    public HttpEntity<?> getAllUsers(@RequestParam Integer pageNumber, @RequestParam Integer pageSize){
+        PageRequests request = new PageRequests(pageNumber,pageSize);
         return userService.getAllUserRequest(request);
     }
     @GetMapping(value = "/getUsers/{id}")
     HttpEntity<?> getUserId(@PathVariable Long id){
         return userService.getUserId(id);
     }
-    @PutMapping(value = "/updateUser/{id}")
-    public HttpEntity<?> updateUser(@RequestBody UserDto userDto,@PathVariable Long id){
-        return userService.updateUser(userDto,id);
+    @PutMapping(value = "/updateUser/{id}",consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public HttpEntity<?> updateUser(@ModelAttribute UserRequest request,@PathVariable Long id){
+        return userService.updateUser(request,id);
     }
     @DeleteMapping(value = "/deleteUser/{id}")
     public HttpEntity<?> deleteUser(@PathVariable Long id){

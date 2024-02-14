@@ -20,28 +20,16 @@ import java.util.stream.Collectors;
 @Component
 @Service
 public class SettingsService {
-    SettingsRepository settingsRepository;
+    private final SettingsRepository settingsRepository;
 
    public HttpEntity<?> createSettings(SettingsDto settingsDto) {
-        try {
-            Optional<Settings> byIP = settingsRepository.findByIP(settingsDto.getIP());
-            if (byIP.isEmpty()) {
-                if (settingsDto != null) {
                     Settings settings = new Settings();
                     settings.setName(settingsDto.getName());
-                    settings.setIP(settingsDto.getIP());
+                    settings.setIp(settingsDto.getIp());
                     settings.setActive(settingsDto.getActive());
-                    settingsRepository.save(settings);
-                    return Payload.ok().response();
-                } else {
-                    return Payload.conflict("Request error").response();
-                }
-            } else {
-                return Payload.conflict("Such an IP exists").response();
-            }
-        } catch (Exception e) {
-            return Payload.conflict(e.getMessage()).response();
-        }
+
+       Settings save = settingsRepository.save(settings);
+       return Payload.ok(save).response();
     }
 
    public HttpEntity<?> getSettings(GetAllUserRequest request) {
@@ -52,7 +40,7 @@ public class SettingsService {
                         new Settings(
                                 r.getId(),
                                 r.getName(),
-                                r.getIP(), r.getActive()
+                                r.getIp(), r.getActive()
                         )).collect(Collectors.toList());
                 if (allSettings != null) {
                     return Payload.ok(allSettings).response();
@@ -85,11 +73,11 @@ public class SettingsService {
         try {
             Optional<Settings> byIP = settingsRepository.findById(id);
             if (!byIP.isEmpty()) {
-                Settings settings = new Settings();
-                settings.setId(byIP.get().getId());
-                settings.setName(byIP.get().getName());
-                settings.setIP(byIP.get().getIP());
-                settings.setActive(byIP.get().getActive());
+                Settings settings = byIP.get();
+                settings.setId(id);
+                settings.setName(settingsDto.getName());
+                settings.setIp(settingsDto.getIp());
+                settings.setActive(settingsDto.getActive());
                 settingsRepository.save(settings);
                 return Payload.ok(settings).response();
             } else {

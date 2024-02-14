@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 public class SettingsController {
     private final SettingsService settingsService;
     @PostMapping(value = "/createSettings")
-    HttpEntity<?> createSettings(SettingsDto settingsDto){
+    HttpEntity<?> createSettings(@RequestBody SettingsDto settingsDto){
         return settingsService.createSettings(settingsDto);
     }
     @GetMapping(value = "/getSettings")

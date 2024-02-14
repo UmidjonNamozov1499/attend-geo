@@ -16,6 +16,8 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private String firstName;
+    private String lastName;
 
     @Column(nullable = false)
     private String userName;
@@ -26,8 +28,8 @@ public class User {
 
     private String device;
 
-    @Column(nullable = false)
-    private Boolean isBlocked;
+
+    private Boolean isBlocked = true;
 
     @ManyToMany
     private List<Images> images;

@@ -18,7 +18,7 @@ public class Settings {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-    private String IP;
+    private String ip;
     private Boolean active;
 
 }

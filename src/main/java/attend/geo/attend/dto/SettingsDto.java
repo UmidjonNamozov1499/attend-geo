@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class SettingsDto {
     private String name;
-    private String IP;
+    private String ip;
     private Boolean active;
 }
