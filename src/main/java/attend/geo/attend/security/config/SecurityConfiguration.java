@@ -35,10 +35,14 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests()
                 .requestMatchers("/api/authenticate").permitAll()
                 .requestMatchers("/api/register").permitAll()
+                .requestMatchers("/swagger-ui/**", "/swagger-resources/**", "/v2/api-docs", "/webjars/**").permitAll()
                 .anyRequest()
                 .authenticated()
-                .and()
-                .httpBasic()
+//                .and()
+//                .formLogin()
+//                .loginPage("/api/authenticate").permitAll()
+//                .and()
+//                .logout().permitAll()
                 .and()
                 .apply(configurer());
         return http.build();

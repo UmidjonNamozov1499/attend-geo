@@ -1,9 +1,11 @@
 package attend.geo.attend.service;
 
 import attend.geo.attend.dto.ResponsUserTable;
+import attend.geo.attend.entity.User;
 import attend.geo.attend.entity.UserAttendance;
 import attend.geo.attend.payload.Payload;
 import attend.geo.attend.repository.UserAttendanceRepository;
+import attend.geo.attend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.http.HttpEntity;
@@ -17,11 +19,13 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+
 @RequiredArgsConstructor
 @Component
 @Service
 public class TableService {
     private final UserAttendanceRepository userAttendanceRepository;
+    private final UserRepository userRepository;
     Calendar calendar = Calendar.getInstance();
 
     public HttpEntity<?> getUserTableExcel() throws IOException {
@@ -48,10 +52,10 @@ public class TableService {
 
     public HttpEntity<?> getUsersTable(){
         try {
-            List<UserAttendance> allUsers = userAttendanceRepository.findAll();
+            List<User> allUsers = userRepository.findAll();
             Set<String> userTable = new TreeSet<>();
             List<ResponsUserTable> responsUserTables = new ArrayList<>();
-            for (UserAttendance allUser : allUsers) {
+            for (User allUser : allUsers) {
                 String uniqueUser = allUser.getUserName();
                 if (!userTable.contains(uniqueUser)) {
                     userTable.add(uniqueUser);
@@ -63,26 +67,44 @@ public class TableService {
                 if (users != null) {
                     responsUserTable.setUserName(users);
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                    calendar.set(Calendar.DAY_OF_MONTH, 1);
                     String startDate = new SimpleDateFormat("yyyy-MM-dd").format(calendar.getTime());
                     Date start = sdf.parse(startDate);
                     calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
                     String endDate = new SimpleDateFormat("yyyy-MM-dd").format(calendar.getTime());
                     Date end = sdf.parse(endDate);
-                    List<UserAttendance> byUserNameOrderByDateDesc = userAttendanceRepository.findByUserNameAndDateBetweenOrderByDateAsc(users, start, end);
+                    int lastDayOfMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
+                    List<User> byUserNameOrderByDateDesc = userRepository.findByUserNameAndDateBetweenOrderByDateAsc(users, start, end);
                     if (byUserNameOrderByDateDesc != null) {
+
                         List<Long> workingHours = new ArrayList<>();
-                        for (UserAttendance userAttendance : byUserNameOrderByDateDesc) {
-                            if (userAttendance.getWorkingHours() != null) {
-                                workingHours.add(userAttendance.getWorkingHours());
-                                responsUserTable.setWorkingHours(workingHours);
-                            } else {
-                                workingHours.add(null);
-                                responsUserTable.setWorkingHours(workingHours);
+
+                            for (User user : byUserNameOrderByDateDesc) {
+                                for (int i = 1; i <= lastDayOfMonth; i++) {
+                                Date date = user.getDate();
+                                Calendar calendar = Calendar.getInstance();
+                                calendar.setTime(date);
+
+                                int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
+                                if (i == dayOfMonth){
+                                    workingHours.add(user.getWorkingHours());
+                                    responsUserTable.setWorkingHours(workingHours);
+                                }else {
+                                    workingHours.add(null);
+                                    responsUserTable.setWorkingHours(workingHours);
+                                }
                             }
+//                            for (User user : byUserNameOrderByDateDesc) {
+//                                if (user.getWorkingHours() != null) {
+//                                    workingHours.add(user.getWorkingHours());
+//                                    responsUserTable.setWorkingHours(workingHours);
+//                                } else {
+//                                    workingHours.add(null);
+//                                    responsUserTable.setWorkingHours(workingHours);
+//                                }
+//                            }
                         }
                     }
-                } else {
-                    responsUserTable.setUserName(null);
                 }
                 responsUserTables.add(responsUserTable);
             }

@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.sql.Date;
 import java.sql.Timestamp;
+import java.util.Date;
 
 @Data
 @Builder

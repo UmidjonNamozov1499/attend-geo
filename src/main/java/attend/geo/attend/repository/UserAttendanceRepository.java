@@ -7,7 +7,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.repository.query.Param;
 
 import java.util.Date;
 import java.util.List;
@@ -19,6 +21,9 @@ public interface UserAttendanceRepository extends JpaRepository<UserAttendance, 
 
     Page<UserAttendance> findAllByDateBetweenOrderByDateAsc(Date start, Date endDate, Pageable pageable);
 
+    Page<UserAttendance> findAll(Specification<UserAttendance> spec, Pageable pageable);
+    @Query("SELECT ua FROM UserAttendance ua WHERE ua.startDate <= :date OR ua.endDate >= :date")
+    List<UserAttendance> findByDate(@Param("date") Date date);
 
 //    List<UserAttendance> findByNameAndLastName(String name,String lastName);
 //public class specification{

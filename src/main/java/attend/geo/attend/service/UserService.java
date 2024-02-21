@@ -3,6 +3,7 @@ package attend.geo.attend.service;
 import attend.geo.attend.dto.PageRequests;
 import attend.geo.attend.dto.UserDto;
 import attend.geo.attend.dto.UserRequest;
+import attend.geo.attend.dto.UserResponse;
 import attend.geo.attend.entity.Images;
 import attend.geo.attend.entity.User;
 import attend.geo.attend.payload.Payload;
@@ -109,7 +110,7 @@ public class UserService {
             user.setConnection(false);
             User saveUser = userRepository.save(user);
             return Payload.ok(saveUser).response();
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return Payload.conflict(e.getMessage()).response();
         }
@@ -119,19 +120,21 @@ public class UserService {
         try {
             if (request != null) {
                 Page<User> all = userRepository.findAll(PageRequest.of(request.getPageNumber(), request.getPageSize()));
-                List<User> userList = all.stream().map(r ->
-                        new User(r.getId(),
-                                r.getFirstName(),
-                                r.getLastName(),
-                                r.getUserName(),
-                                r.getRandomCode(),
-                                r.getPosition(),
-                                r.getConnection(),
-                                r.getDevice(),
-                                r.getIsBlocked(),
-                                r.getImages()
-                        )).collect(Collectors.toList());
-                return Payload.ok(userList).response();
+                List<UserResponse> userResponseList = new ArrayList<>();
+                for (User user : all.getContent()) {
+                    if (user.getIsBlocked()) {
+                        UserResponse userResponse = new UserResponse();
+                        userResponse.setId(user.getId());
+                        userResponse.setLastName(user.getLastName());
+                        userResponse.setFirstName(user.getFirstName());
+                        userResponse.setRandomCode(user.getRandomCode());
+                        userResponse.setConnection(user.getConnection());
+                        userResponse.setIsBlocked(user.getIsBlocked());
+                        userResponse.setDevice(user.getDevice());
+                        userResponseList.add(userResponse);
+                    }
+                }
+                return Payload.ok(userResponseList).response();
             } else {
                 return ResponseEntity.ok("Request error");
             }
@@ -180,10 +183,10 @@ public class UserService {
                 user.setConnection(false);
                 User saveUser = userRepository.save(user);
                 return Payload.ok(saveUser).response();
-            }else {
+            } else {
                 return Payload.conflict("User not found").response();
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return Payload.conflict(e.getMessage()).response();
         }

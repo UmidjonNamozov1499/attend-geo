@@ -24,7 +24,20 @@ public class DavomatController {
     public HttpEntity<?> getAllUsersDavomat(
             @RequestParam(value = "start", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date start,
             @RequestParam(value = "end", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date end,
-            @RequestParam(value = "page", required = false) PageRequests pageable) {
-        return davomatService.getAllUsersDavomat(start, end,pageable);
+            @RequestParam(value = "pageNumber", required = false) Integer pageNumber,
+            @RequestParam(value = "pageSize", required = false) Integer pageSize) {
+        PageRequests pageable = new PageRequests(pageNumber, pageSize);
+        return davomatService.getAllUsersDavomat(start, end, pageable);
+    }
+
+    @GetMapping(value = "/getUserDavomatList")
+    public HttpEntity<?> getUsersDavomat(
+            @RequestParam(value = "start", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date start,
+            @RequestParam(value = "end", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date end,
+            @RequestParam(value = "pageNumber", required = false) Integer pageNumber,
+            @RequestParam(value = "pageSize", required = false) Integer pageSize
+    ) {
+        PageRequests pageable = new PageRequests(pageNumber, pageSize);
+        return davomatService.getAllUsers(start,end,pageable);
     }
 }

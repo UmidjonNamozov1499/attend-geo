@@ -29,7 +29,6 @@ public class UserJwtController {
 
     @PostMapping("/authenticate")
     public ResponseEntity<JWTToken> authorize(@RequestBody LoginVM loginVM) {
-
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                 loginVM.getUsername(),
                 loginVM.getPassword()
@@ -44,11 +43,9 @@ public class UserJwtController {
 
     static class JWTToken {
         private String token;
-
         public JWTToken(String token) {
             this.token = token;
         }
-
         @JsonProperty("jwt_token")
         public String getToken() {
             return token;
