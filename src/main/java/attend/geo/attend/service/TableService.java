@@ -76,7 +76,6 @@ public class TableService {
                     int lastDayOfMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
                     List<User> byUserNameOrderByDateDesc = userRepository.findByUserNameAndDateBetweenOrderByDateAsc(users, start, end);
                     if (byUserNameOrderByDateDesc != null) {
-
                         List<Long> workingHours = new ArrayList<>();
 
                             for (User user : byUserNameOrderByDateDesc) {
@@ -84,13 +83,9 @@ public class TableService {
                                 Date date = user.getDate();
                                 Calendar calendar = Calendar.getInstance();
                                 calendar.setTime(date);
-
                                 int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
                                 if (i == dayOfMonth){
                                     workingHours.add(user.getWorkingHours());
-                                    responsUserTable.setWorkingHours(workingHours);
-                                }else {
-                                    workingHours.add(null);
                                     responsUserTable.setWorkingHours(workingHours);
                                 }
                             }

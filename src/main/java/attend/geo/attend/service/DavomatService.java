@@ -2,6 +2,8 @@ package attend.geo.attend.service;
 
 import attend.geo.attend.dto.PageRequests;
 import attend.geo.attend.dto.PageResponse;
+import attend.geo.attend.dto.UserRequest;
+import attend.geo.attend.dto.UserRequestDavomat;
 import attend.geo.attend.entity.User;
 import attend.geo.attend.entity.UserAttendance;
 import attend.geo.attend.payload.Payload;
@@ -111,4 +113,25 @@ public class DavomatService {
             return Payload.conflict(e.getMessage()).response();
         }
     }
-}
+    public HttpEntity<?> updateUserDate(Long id, UserRequestDavomat requestDavomat){
+        try {
+            Optional<User> byId = userRepository.findById(id);
+            if (!byId.isEmpty()) {
+                User user = byId.get();
+                user.setId(id);
+                user.setStartDate(requestDavomat.getStartDate());
+                user.setEndDate(requestDavomat.getEndDate());
+                user.setDate(requestDavomat.getDate());
+                userRepository.save(user);
+                Optional<User> byId1 = userRepository.findById(id);
+                return Payload.ok(byId1).response();
+            }else {
+                return Payload.conflict("Bunday user yo`q").response();
+            }
+        }catch (Exception e) {
+        e.printStackTrace();
+        return Payload.conflict(e.getMessage()).response();
+        }
+        }
+    }
+
